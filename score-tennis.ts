@@ -1,17 +1,46 @@
-import { ScoreBoard, Player, Game } from "./types";
+import {
+  ScoreBoard,
+  Player,
+  Game,
+  TieBreakGame,
+  CountScores,
+  SetCount,
+} from "./types";
 
 export default class ScoreTennis {
+  // Three-set match
   scoreBoard: ScoreBoard = {
-    playerA: [],
-    playerB: [],
+    playerA: [0, 0, 0],
+    playerB: [0, 0, 0],
   };
 
   constructor() {
-    console.log(this.countGame());
+    const winner = this.countMatch(this.scoreBoard.playerA.length);
+    console.log(winner);
+    console.log(this.scoreBoard);
   }
 
-  playerScored = (): Player =>
+  whichPlayerScored = (): Player =>
     Math.floor(Math.random() * 2) + 1 === 1 ? "A" : "B";
+
+  decideRoundWinner = <T extends CountScores>(
+    scoreTarget: number,
+    scores: T
+  ): Player | undefined => {
+    if (
+      scores.playerA >= scoreTarget &&
+      scores.playerB === scores.playerA - 2
+    ) {
+      return "A";
+    } else if (
+      scores.playerB >= scoreTarget &&
+      scores.playerA === scores.playerB - 2
+    ) {
+      return "B";
+    } else {
+      return undefined;
+    }
+  };
 
   countGame = (): Player => {
     let winner: Player | undefined = undefined;
@@ -41,7 +70,7 @@ export default class ScoreTennis {
         break;
       }
 
-      if (this.playerScored() === "A") {
+      if (this.whichPlayerScored() === "A") {
         switch (game.playerA) {
           case "0":
             checkPlayerAdvantage("A");
@@ -87,19 +116,72 @@ export default class ScoreTennis {
     }
     return winner;
   };
+
+  countTieBreakGame = (): Player => {
+    let winner: Player | undefined = undefined;
+    const game: TieBreakGame = {
+      playerA: 0,
+      playerB: 0,
+    };
+
+    while (true) {
+      this.whichPlayerScored() === "A" ? game.playerA++ : game.playerB++;
+
+      if (this.decideRoundWinner(7, game) === "A") {
+        winner = "A";
+        break;
+      } else if (this.decideRoundWinner(7, game) === "B") {
+        winner = "B";
+        break;
+      }
+    }
+
+    return winner;
+  };
+
+  countSet = (): CountScores => {
+    const set: CountScores = {
+      playerA: 0,
+      playerB: 0,
+    };
+
+    while (true) {
+      this.countGame() === "A" ? set.playerA++ : set.playerB++;
+
+      if (this.decideRoundWinner(6, set) === "A") {
+        break;
+      } else if (this.decideRoundWinner(6, set) === "B") {
+        break;
+      } else if (set.playerA === 6 && set.playerB === 6) {
+        this.countTieBreakGame() === "A" ? set.playerA++ : set.playerB++;
+        break;
+      }
+    }
+
+    return set;
+  };
+
+  countMatch = (setCount: SetCount): Player => {
+    for (let i = 0; i < setCount; i++) {
+      const set = this.countSet();
+      this.scoreBoard.playerA[i] = set.playerA;
+      this.scoreBoard.playerB[i] = set.playerB;
+    }
+
+    const firstToWinBySets = setCount === 3 ? 2 : 3;
+
+    const match: CountScores = {
+      playerA: 0,
+      playerB: 0,
+    };
+
+    for (let i = 0; i < firstToWinBySets; i++) {
+      this.scoreBoard.playerA[i] > this.scoreBoard.playerB[i]
+        ? match.playerA++
+        : match.playerB++;
+    }
+
+    console.log(match);
+    return match.playerA > match.playerB ? "A" : "B";
+  };
 }
-
-/* POINTS */
-// Each point will be 15 -> 30 -> 40 -> GAME
-
-/* WINNING A GAME */
-// Player has to win 4 points
-// If Player 1's points === 40 && Player 2's points === 40 => 'Duece'
-// The player who wins the next point => A (Advantage)
-// If the same player wins the next point => GAME (Complete)
-// If not, the score returns to 40 - 40 (Need 2 consecutive points to win from a deuce to win)
-
-/* WINNING A SET */
-// First person to win 6 games wins
-// Only if they win by two clear games (e.g 6-4, 7-5)
-// If scores are 6-6 -

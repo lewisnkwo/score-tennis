@@ -6,9 +6,19 @@ export interface Game {
   playerB: GamePoint;
 }
 
-export type SetPoint = string;
+export interface CountScores {
+  playerA: number;
+  playerB: number;
+}
+
+export type TieBreakGame = CountScores;
+
+export type SetCount = 3 | 5;
+export type Sets =
+  | [number, number, number]
+  | [number, number, number, number, number];
 
 export interface ScoreBoard {
-  playerA: SetPoint[];
-  playerB: SetPoint[];
+  playerA: Sets;
+  playerB: Sets;
 }
