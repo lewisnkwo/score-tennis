@@ -13,11 +13,11 @@ export default class ScoreTennis {
     playerA: [0, 0, 0],
     playerB: [0, 0, 0],
   };
+  winner: Player | undefined;
 
   constructor() {
-    const winner = this.countMatch(this.scoreBoard.playerA.length);
-    console.log(winner);
-    console.log(this.scoreBoard);
+    this.winner = this.countMatch(this.scoreBoard.playerA.length);
+    console.log(this.winner);
   }
 
   whichPlayerScored = (): Player =>
@@ -42,12 +42,13 @@ export default class ScoreTennis {
     }
   };
 
-  countGame = (): Player => {
-    let winner: Player | undefined = undefined;
-    const game: Game = {
+  countGame = (
+    game: Game = {
       playerA: "0",
       playerB: "0",
-    };
+    }
+  ): Player => {
+    let winner: Player | undefined = undefined;
 
     const checkPlayerAdvantage = (player: Player) => {
       if (player === "A") {
@@ -117,12 +118,13 @@ export default class ScoreTennis {
     return winner;
   };
 
-  countTieBreakGame = (): Player => {
-    let winner: Player | undefined = undefined;
-    const game: TieBreakGame = {
+  countTieBreakGame = (
+    game: TieBreakGame = {
       playerA: 0,
       playerB: 0,
-    };
+    }
+  ): Player => {
+    let winner: Player | undefined = undefined;
 
     while (true) {
       this.whichPlayerScored() === "A" ? game.playerA++ : game.playerB++;
