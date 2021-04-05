@@ -10,8 +10,8 @@ import {
 export default class ScoreTennis {
   // Three-set match
   scoreBoard: ScoreBoard = {
-    playerA: [0, 0, 0, 0, 0],
-    playerB: [0, 0, 0, 0, 0],
+    playerA: [0, 0, 0],
+    playerB: [0, 0, 0],
   };
   winner: Player | undefined;
 
@@ -63,6 +63,51 @@ export default class ScoreTennis {
       }
     };
 
+    const onScore = (p: Player, g: Game) => {
+      const playerScore = p === "A" ? g.playerA : g.playerB;
+      switch (playerScore) {
+        case "0":
+          checkPlayerAdvantage(p);
+          if (p === "A") {
+            g.playerA = "15";
+          } else {
+            g.playerB = "15";
+          }
+          return g;
+        case "15":
+          checkPlayerAdvantage(p);
+          if (p === "A") {
+            g.playerA = "30";
+          } else {
+            g.playerB = "30";
+          }
+          return g;
+        case "30":
+          checkPlayerAdvantage(p);
+          if (p === "A") {
+            g.playerA = "40";
+          } else {
+            g.playerB = "40";
+          }
+          break;
+        case "40":
+          checkPlayerAdvantage(p);
+          if (p === "A") {
+            g.playerA = "A";
+          } else {
+            g.playerB = "A";
+          }
+          break;
+        case "A":
+          if (p === "A") {
+            g.playerA = "GAME";
+          } else {
+            g.playerB = "GAME";
+          }
+      }
+      return g;
+    };
+
     while (true) {
       if (game.playerA === "GAME") {
         winner = "A";
@@ -73,47 +118,9 @@ export default class ScoreTennis {
       }
 
       if (this.whichPlayerScored() === "A") {
-        switch (game.playerA) {
-          case "0":
-            checkPlayerAdvantage("A");
-            game.playerA = "15";
-            break;
-          case "15":
-            checkPlayerAdvantage("A");
-            game.playerA = "30";
-            break;
-          case "30":
-            checkPlayerAdvantage("A");
-            game.playerA = "40";
-            break;
-          case "40":
-            checkPlayerAdvantage("A");
-            game.playerA = "A";
-            break;
-          case "A":
-            game.playerA = "GAME";
-        }
+        game = onScore("A", game);
       } else {
-        switch (game.playerB) {
-          case "0":
-            checkPlayerAdvantage("B");
-            game.playerB = "15";
-            break;
-          case "15":
-            checkPlayerAdvantage("B");
-            game.playerB = "30";
-            break;
-          case "30":
-            checkPlayerAdvantage("B");
-            game.playerB = "40";
-            break;
-          case "40":
-            checkPlayerAdvantage("B");
-            game.playerB = "A";
-            break;
-          case "A":
-            game.playerB = "GAME";
-        }
+        game = onScore("B", game);
       }
     }
     return winner;
