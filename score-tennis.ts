@@ -168,19 +168,16 @@ export default class ScoreTennis {
       this.scoreBoard.playerB[i] = set.playerB;
     }
 
-    const firstToWinBySets = setCount === 3 ? 2 : 3;
-
     const match: CountScores = {
       playerA: 0,
       playerB: 0,
     };
 
-    for (let i = 0; i < firstToWinBySets; i++) {
+    for (let i = 0; i < this.scoreBoard.playerA.length; i++) {
       this.scoreBoard.playerA[i] > this.scoreBoard.playerB[i]
         ? match.playerA++
         : match.playerB++;
     }
-
     console.log(match);
     return match.playerA > match.playerB ? "A" : "B";
   };
