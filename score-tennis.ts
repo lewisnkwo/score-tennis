@@ -10,14 +10,15 @@ import {
 export default class ScoreTennis {
   // Three-set match
   scoreBoard: ScoreBoard = {
-    playerA: [0, 0, 0],
-    playerB: [0, 0, 0],
+    playerA: [0, 0, 0, 0, 0],
+    playerB: [0, 0, 0, 0, 0],
   };
   winner: Player | undefined;
 
   constructor() {
     this.winner = this.countMatch(this.scoreBoard.playerA.length);
-    console.log(this.winner);
+    console.log("Scoreboard:", this.scoreBoard);
+    console.log("Winner:", this.winner);
   }
 
   whichPlayerScored = (): Player =>
@@ -175,12 +176,13 @@ export default class ScoreTennis {
       playerB: 0,
     };
 
-    for (let i = 0; i < this.scoreBoard.playerA.length; i++) {
+    const setsToWin = setCount === 3 ? 3 : 4;
+
+    for (let i = 0; i < setsToWin; i++) {
       this.scoreBoard.playerA[i] > this.scoreBoard.playerB[i]
         ? match.playerA++
         : match.playerB++;
     }
-    console.log(match);
     return match.playerA > match.playerB ? "A" : "B";
   };
 }
